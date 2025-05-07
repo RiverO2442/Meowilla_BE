@@ -8,15 +8,14 @@ class OpenverseClient:
     that handles authentication and image search functionality.
     """
     
-    BASE_URL = "https://api.openverse.org/v1"
+    BASE_URL = os.environ.get('BASE_URL')
     
     def __init__(self):
         self.access_token = None
         self.token_expiry = 0
-        # You should replace these with your actual client credentials
-        self.client_id = "frPMBxB91SHgwmYO4oHbftFzzNnOWkYTFYqtuf1B"
-        self.client_secret = "FMSyuFAUK364a42j46f68lMpcFmfiFvbgkjUuF0I0xPMmzu8NAbRx8vrr1XhMSqm1xHfQw2KJx4GPAjAnIRGkojYvfK0uGaj85lZOBujjlHrhkohMvUUacs94P55MgU1"
-        self.name = "RiverO"
+        self.client_id = os.environ.get('client_id')
+        self.client_secret = os.environ.get('client_secret')
+        self.name = os.environ.get('name')
     
     def _get_auth_token(self) -> str:
         """
