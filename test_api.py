@@ -1,16 +1,25 @@
 import pytest
 from flask import json
-from main import app 
+from main import app
+from config import db  # import db from your config.py
 
 @pytest.fixture
 def client():
     app.config["TESTING"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"  # in-memory DB for testing
     app.config["WTF_CSRF_ENABLED"] = False
+
+    with app.app_context():
+        db.create_all()  # ✅ Create tables before tests
+
     with app.test_client() as client:
         yield client
 
+    # Optional: Clean up after tests
+    with app.app_context():
+        db.drop_all()
+
 def test_register_user(client):
-    # Simulate a registration POST request
     response = client.post("/register", json={
         "username": "testuser",
         "email": "test@example.com",
@@ -18,7 +27,7 @@ def test_register_user(client):
     })
     data = response.get_json()
 
-    assert response.status_code in [201, 400]  # could be 400 if email already exists
+    assert response.status_code in [201, 400]  # 400 if user/email already exists
     assert "message" in data
 
 def test_search_images(client, monkeypatch):
